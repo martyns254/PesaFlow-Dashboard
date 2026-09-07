@@ -1,75 +1,38 @@
-# React + TypeScript + Vite
+# PesaFlow Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript web client for [PesaFlow](https://github.com/martyns254/PesaFlow), my Spring Boot payment/wallet microservices project. Built as a separate repo on purpose, it talks to PesaFlow's REST APIs over HTTP the same way any external client would, not by sharing code.
 
-Currently, two official plugins are available:
+Built to get real, hands-on React and TypeScript experience on top of a backend I already understood deeply, rather than starting a frontend project from a blank, unfamiliar domain.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it does
 
-## React Compiler
+- Looks up a wallet's balance by phone number
+- Lists recent payments and their status (`PENDING`, `SUCCESS`, `FAILED`)
+- Calls `payment-service` (port 8080) and `wallet-service` (port 8081) directly, each secured with the same `X-API-KEY` header used everywhere else in PesaFlow
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Design
 
-## Expanding the ESLint configuration
+Built with a ledger aesthetic rather than a generic admin-dashboard template: ink navy background, a single gold accent, Instrument Serif for the balance figure, Inter for everything else, right-aligned amounts (standard accounting convention), and quiet status dots instead of loud badge pills.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## A few real decisions and bugs behind it
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- CORS had to be configured on both backend services, plus an exception in the custom `ApiKeyFilter` for `OPTIONS` preflight requests, since the browser can't attach a custom header to those
+- A failed wallet lookup (404) was originally read as if it succeeded, storing `undefined` into state and crashing the whole page the moment `.toLocaleString()` ran on it. Fixed by checking `response.ok` before parsing, and by checking `typeof value === 'number'` before formatting anywhere a number is displayed, rather than only checking against `null`
+- Errors are shown in the interface itself ("No wallet found for this number") instead of letting the page crash or fail silently
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Running locally
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Requires `payment-service` and `wallet-service` from PesaFlow running locally first (ports 8080 and 8081).
 
 ```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+npm install
+npm run dev
 ```
+
+## Stack
+
+React, TypeScript, Vite
+
+## Author
+
+Martins Kosgei — [github.com/martyns254](https://github.com/martyns254)
