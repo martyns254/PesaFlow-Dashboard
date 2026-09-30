@@ -2,7 +2,7 @@
 
 A React + TypeScript web client for [PesaFlow](https://github.com/martyns254/PesaFlow), my Spring Boot payment/wallet microservices project. Built as a separate repo on purpose, it talks to PesaFlow's REST APIs over HTTP the same way any external client would, not by sharing code.
 
-Built to get real, hands-on React and TypeScript experience on top of a backend I already understood deeply, rather than starting a frontend project from a blank, unfamiliar domain.
+Built to get real, hands-on React and TypeScript experience on top of a backend I already understood deeply.
 
 ## What it does
 
